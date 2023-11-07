@@ -16,8 +16,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
-          name="Profile"
-          component={Profile}
+          name="Home"
+          component={Home}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -30,11 +30,11 @@ export default function App() {
           component={Login}
           options={{ headerShown: false }}
         />
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Profile"
           component={Profile}
           options={{ headerShown: false }}
-        /> */}
+        />
         <Stack.Screen
           name="Task"
           component={Task}
