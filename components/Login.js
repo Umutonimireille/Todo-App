@@ -55,7 +55,7 @@ const Login = () => {
          if ( response.data.token) {
            // Navigate to the profile component
            navigation.navigate("Profile");
-           console.log(response.data.token);
+         
          } else {
            // Handle the case where the response is not as expected
            console.error("Invalid response from the server");
