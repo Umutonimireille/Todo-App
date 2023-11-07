@@ -7,7 +7,11 @@ import {
   TextInput,
   Button,
   TouchableOpacity
-} from "react-native";import { useNavigation } from "@react-navigation/native";
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 
 const Login = () => {
@@ -29,6 +33,41 @@ const Login = () => {
        console.log("Password:", password);
   
      };
+
+
+     const loginUser = async () => {
+       // Create a user object with the required data
+       const user = {
+         email,
+         password
+       };
+
+       try {
+         // Make a POST request to the login endpoint
+         const response = await axios.post(
+           "https://lonely-dove-gear.cyclic.app/api/v1/auth/login",
+           user
+         );
+           await AsyncStorage.setItem("authorization", response.data.token);
+
+          //  console.log(response.data);
+         // Check if the response contains the user data and token
+         if ( response.data.token) {
+           // Navigate to the profile component
+           navigation.navigate("Profile");
+           console.log(response.data.token);
+         } else {
+           // Handle the case where the response is not as expected
+           console.error("Invalid response from the server");
+         }
+       } catch (error) {
+         // Handle errors (e.g., display an error message)
+         console.error("Error logging in:", error);
+       }
+     };
+
+
+
 
   return (
     <View style={styles.container}>
@@ -62,7 +101,6 @@ const Login = () => {
             <TextInput
               style={styles.input}
               placeholder=""
-              secureTextEntry={true}
               onChangeText={(text) => setEmail(text)}
               value={email}
             />
@@ -97,17 +135,22 @@ const Login = () => {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleProfile}>
+        <TouchableOpacity style={styles.button} onPress={loginUser}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.links}>
         <Text>Don't have account ?</Text>
-        <Text style = {{
+        <Text
+          style={{
             color: "#62D2C3",
-            fontWeight: "bold",
-        }} onPress={handleRegistration}>Sign Up</Text>
+            fontWeight: "bold"
+          }}
+          onPress={handleRegistration}
+        >
+          Sign Up
+        </Text>
       </View>
     </View>
   );

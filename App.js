@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Registration from "./components/Registration";
 import Login from "./components/Login";
 import Profile from "./components/Profile";
+import Task from "./components/Task";
 
 const Stack = createStackNavigator(); // Create a Stack.Navigator
 
@@ -15,8 +16,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
-          name="Home"
-          component={Home}
+          name="Profile"
+          component={Profile}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -29,11 +30,17 @@ export default function App() {
           component={Login}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Profile"
           component={Profile}
           options={{ headerShown: false }}
+        /> */}
+        <Stack.Screen
+          name="Task"
+          component={Task}
+          options={{ headerShown: false }}
         />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

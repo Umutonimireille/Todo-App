@@ -1,16 +1,47 @@
-import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  Text,
-  TextInput,
-  Button,
-  TouchableOpacity
-} from "react-native";
+import React, { useState, useRef,useEffect } from "react";
+import { View, StyleSheet, Image, Text, TouchableOpacity,CheckBox,TextInput } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import Task from "./Task";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 const Profile = () => {
+  const navigation = useNavigation();
+  const [isTaskModalVisible, setTaskModalVisible] = useState(false);
+  const taskModalRef = useRef(null);
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    getAllTodos();
+  }, []);
+
+  const toggleTaskModal = () => {
+    setTaskModalVisible(!isTaskModalVisible);
+  };
+
+  const getAllTodos = async () => {
+
+     const token = await AsyncStorage.getItem("authorization");
+    //  console.log(token);
+     //  console.log("Token:", token);
+
+     const headers = {
+       Authorization: `${token}` // Include the token in the "Authorization" header
+     };
+    try {
+      const response = await axios.get(
+        "https://lonely-dove-gear.cyclic.app//api/v1/todo/get-todos",
+        {headers}
+      );
+      // console.log(response.data);
+      setTodos(response.data);
+    } catch (error) {
+      console.error("Error fetching todos:", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.ProfileHolder}>
@@ -31,7 +62,8 @@ const Profile = () => {
           <Text
             style={{
               color: "#fff",
-              fontWeight: "bold"
+              fontWeight: "bold",
+              fontSize: 25
             }}
           >
             Welcome Mary
@@ -61,10 +93,46 @@ const Profile = () => {
 
         <View style={styles.tasks}>
           <View style={styles.dailyTask}>
-            <Text>Daily Tasks</Text>
-            <AntDesign name="pluscircleo" size={24} color="#62D2C3" />
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "bold",
+                color: "#000000"
+              }}
+            >
+              Daily Tasks
+            </Text>
+            <TouchableOpacity onPress={toggleTaskModal}>
+              <AntDesign name="pluscircleo" size={24} color="#62D2C3" />
+            </TouchableOpacity>
           </View>
+
+          {Array.isArray(todos) && todos.length > 0 ? (
+            todos.map((todo) => (
+              <View style={styles.task} key={todo._id}>
+                <CheckBox
+                  value={todo.completed}
+                  style={{ width: 25, height: 25 }}
+                />
+                <Text
+                  style={{
+                    fontFamily: "poppins",
+                    fontSize: 20,
+                    fontWeight: "semi-bold"
+                  }}
+                >
+                  {todo.task}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text>DATA LOADING</Text>
+          )}
         </View>
+
+        {isTaskModalVisible && (
+          <Task ref={taskModalRef} onClose={() => setTaskModalVisible(false)} />
+        )}
       </View>
     </View>
   );
@@ -73,7 +141,6 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     backgroundColor: "#EEEEEE",
     gap: "1rem"
   },
@@ -83,8 +150,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#62D2C3",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
-    gap: 10
+    alignItems: "center"
+  },
+  profile: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
   },
   image1: {
     height: 150,
@@ -101,11 +172,10 @@ const styles = StyleSheet.create({
     top: -35,
     left: -40
   },
-
   image: {
     width: 100,
     height: 100,
-    borderRadius: "100%"
+    borderRadius: 100
   },
   group: {
     display: "flex",
@@ -124,14 +194,23 @@ const styles = StyleSheet.create({
       width: 0,
       height: 3
     },
-    shadowRadius: 8
+    shadowRadius: 8,
+    width: "100%"
   },
   dailyTask: {
     display: "flex",
     flexDirection: "row",
-  justifyContent:"space-between",
- padding:10
-
+    justifyContent: "space-between",
+    padding: 10
+  },
+  task: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    left: "5%",
+    gap: 8,
+    padding: 4
   }
 });
+
 export default Profile;

@@ -8,11 +8,54 @@ import {
   Button,
   TouchableOpacity
 } from "react-native";
+import axios from "axios";
+
 
 
 import { useNavigation } from "@react-navigation/native";
 
 const Registration = () => {
+
+const createUser = async () => {
+  // Check if password and confirmPassword match
+  if (password !== confirmPassword) {
+    console.error("Password and Confirm Password do not match.");
+    return; // Exit the function
+  }
+
+  // Create a user object with the required data
+  const user = {
+    full_name: fullName,
+    email,
+    password
+  };
+
+  try {
+    // Make a POST request to your backend API to create the user
+    const response = await axios.post(
+      "https://lonely-dove-gear.cyclic.app/api/v1/auth/create-account",
+      user
+    );
+
+    // Handle the response from the server (e.g., display a success message)
+    console.log(response.data );
+
+    // Optionally, you can navigate to a different screen after successful registration
+    navigation.navigate("Login");
+  } catch (error) {
+    // Handle errors (e.g., display an error message)
+    console.error("Error creating user:", error);
+  }
+}
+
+
+
+
+
+
+
+
+
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
@@ -83,7 +126,7 @@ const Registration = () => {
             <TextInput
               style={styles.input}
               placeholder=""
-              secureTextEntry={true}
+              
               onChangeText={(text) => setEmail(text)}
               value={email}
             />
@@ -124,7 +167,7 @@ const Registration = () => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={createUser}>
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
       </View>
